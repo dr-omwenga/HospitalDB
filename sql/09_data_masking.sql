@@ -425,8 +425,7 @@ BEGIN
     ELSE
     BEGIN
         RAISERROR(
-            'Role [%s] is not authorised for full data access. '
-            + 'Masked values will be returned by all views.',
+            'Role [%s] is not authorised for full data access. Masked values will be returned by all views.',
             16, 1, @CallerRole
         );
     END

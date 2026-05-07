@@ -422,10 +422,12 @@ BEGIN
                 WHERE AppointmentID = @AppointmentID
                   AND BillStatus    = 'Paid'
             )
-                THROW 50016,
+            BEGIN
+                DECLARE @Msg50016 NVARCHAR(2048) =
                     'Cancellation rejected: a fully Paid bill exists for this appointment.  '
-                    + 'Reverse the payment before cancelling, or mark the appointment as No-Show instead.',
-                    1;
+                    + 'Reverse the payment before cancelling, or mark the appointment as No-Show instead.';
+                THROW 50016, @Msg50016, 1;
+            END;
         END;
 
         -- ---------------------------------------------------------------
