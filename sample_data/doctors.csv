@@ -1,0 +1,4 @@
+DoctorID,DepartmentID,FirstName,LastName,Phone,Email,Specialization,LicenseNumber
+1,1,Wei,Chen,+1-555-0201,dr.wei.chen@hospital.com,Cardiologist,MD-IL-10011
+2,2,Priya,Sharma,+1-555-0202,dr.priya.sharma@hospital.com,Orthopedic Surgeon,MD-IL-10022
+3,3,Carlos,Vega,+1-555-0203,dr.carlos.vega@hospital.com,Neurologist,MD-IL-10033

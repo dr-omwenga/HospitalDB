@@ -1,0 +1,4 @@
+BillID,PatientID,AppointmentID,TotalAmount,PaidAmount,Balance,BillStatus,CreatedDate
+1,1,1,350.00,350.00,0.00,Paid,2026-04-10 10:00:00
+2,2,2,270.00,150.00,120.00,Partial,2026-04-12 11:30:00
+3,3,3,150.00,0.00,150.00,Unpaid,2026-04-15 15:00:00

@@ -1,0 +1,219 @@
+---
+title: HospitalDB Entity-Relationship Diagram
+---
+erDiagram
+
+    ROLES {
+        int     RoleID   PK
+        varchar RoleName
+    }
+
+    USERS {
+        int        UserID       PK
+        int        RoleID       FK
+        varchar    Username
+        varbinary  PasswordHash
+        datetime   LastLogin
+        bit        IsActive
+    }
+
+    AUDIT_LOGS {
+        int          AuditID           PK
+        int          PerformedByUserID FK
+        varchar      TableName
+        varchar      ActionType
+        datetime     ActionDate
+        nvarchar_MAX OldValue
+        nvarchar_MAX NewValue
+    }
+
+    ERROR_LOGS {
+        int          ErrorID       PK
+        varchar      ProcedureName
+        nvarchar_MAX ErrorMessage
+        datetime     ErrorDate
+    }
+
+    ADDRESSES {
+        int     AddressID  PK
+        varchar Street
+        varchar City
+        varchar State
+        varchar PostalCode
+        varchar Country
+    }
+
+    DEPARTMENTS {
+        int     DepartmentID   PK
+        varchar DepartmentName
+        varchar Location
+    }
+
+    INSURANCE_PROVIDERS {
+        int     InsuranceProviderID PK
+        varchar ProviderName
+        varchar Phone
+        varchar Email
+    }
+
+    LAB_TEST_CATALOG {
+        int          LabTestTypeID PK
+        varchar      TestName
+        decimal_10_2 StandardPrice
+    }
+
+    SERVICE_CATALOG {
+        int          ServiceID    PK
+        varchar      ServiceName
+        decimal_10_2 StandardPrice
+    }
+
+    PATIENTS {
+        int      PatientID   PK
+        int      AddressID   FK
+        varchar  FirstName
+        varchar  LastName
+        date     DOB
+        varchar  Gender
+        varchar  Phone
+        varchar  Email
+        datetime DateCreated
+    }
+
+    EMERGENCY_CONTACTS {
+        int     EmergencyContactID PK
+        int     PatientID          FK
+        varchar FullName
+        varchar Relationship
+        varchar Phone
+        varchar Email
+    }
+
+    PATIENT_INSURANCE_POLICIES {
+        int          PatientInsuranceID  PK
+        int          PatientID           FK
+        int          InsuranceProviderID FK
+        varchar      PolicyNumber
+        decimal_5_2  CoveragePercent
+        date         ExpiryDate
+        bit          IsPrimary
+    }
+
+    DOCTORS {
+        int     DoctorID       PK
+        int     DepartmentID   FK
+        varchar FirstName
+        varchar LastName
+        varchar Phone
+        varchar Email
+        varchar Specialization
+        varchar LicenseNumber
+    }
+
+    APPOINTMENTS {
+        int      AppointmentID   PK
+        int      PatientID       FK
+        int      DoctorID        FK
+        int      CreatedByUserID FK
+        datetime AppointmentDate
+        varchar  Status
+        varchar  Reason
+    }
+
+    MEDICAL_RECORDS {
+        int          RecordID      PK
+        int          AppointmentID FK
+        varchar      Diagnosis
+        nvarchar_MAX Notes
+        nvarchar_MAX TreatmentPlan
+        datetime     CreatedDate
+    }
+
+    PRESCRIPTIONS {
+        int  PrescriptionID   PK
+        int  RecordID         FK
+        int  DoctorID         FK
+        date PrescriptionDate
+    }
+
+    PRESCRIPTION_ITEMS {
+        int     PrescriptionItemID PK
+        int     PrescriptionID     FK
+        varchar MedicationName
+        varchar Dosage
+        varchar Frequency
+        varchar Duration
+    }
+
+    LAB_ORDERS {
+        int          LabOrderID    PK
+        int          AppointmentID FK
+        int          LabTestTypeID FK
+        nvarchar_MAX Result
+        varchar      Status
+        datetime     DateRequested
+    }
+
+    BILLS {
+        int          BillID        PK
+        int          PatientID     FK
+        int          AppointmentID FK
+        decimal_10_2 TotalAmount
+        decimal_10_2 PaidAmount
+        decimal_10_2 Balance
+        varchar      BillStatus
+        datetime     CreatedDate
+    }
+
+    BILL_ITEMS {
+        int          BillItemID PK
+        int          BillID     FK
+        int          ServiceID  FK
+        int          Quantity
+        decimal_10_2 UnitPrice
+        decimal_10_2 LineTotal
+    }
+
+    PAYMENTS {
+        int          PaymentID       PK
+        int          BillID          FK
+        datetime     PaymentDate
+        decimal_10_2 Amount
+        varchar      PaymentMethod
+        varchar      ReferenceNumber
+    }
+
+    %% ── Relationships ────────────────────────────────────────
+
+    %% Security
+    ROLES                    ||--o{ USERS                       : "assigned to"
+    USERS                    ||--o{ AUDIT_LOGS                  : "generates"
+    USERS                    ||--o{ APPOINTMENTS                : "creates"
+
+    %% Addresses & Patients
+    ADDRESSES                ||--o{ PATIENTS                    : "home of"
+    DEPARTMENTS              ||--o{ DOCTORS                     : "employs"
+
+    %% Patient Details
+    PATIENTS                 ||--o{ EMERGENCY_CONTACTS          : "has"
+    PATIENTS                 ||--o{ PATIENT_INSURANCE_POLICIES  : "holds"
+    INSURANCE_PROVIDERS      ||--o{ PATIENT_INSURANCE_POLICIES  : "covers"
+
+    %% Scheduling
+    PATIENTS                 ||--o{ APPOINTMENTS                : "attends"
+    DOCTORS                  ||--o{ APPOINTMENTS                : "conducts"
+
+    %% Clinical
+    APPOINTMENTS             ||--o| MEDICAL_RECORDS             : "produces"
+    MEDICAL_RECORDS          ||--o{ PRESCRIPTIONS               : "leads to"
+    DOCTORS                  ||--o{ PRESCRIPTIONS               : "issues"
+    PRESCRIPTIONS            ||--o{ PRESCRIPTION_ITEMS          : "contains"
+    APPOINTMENTS             ||--o{ LAB_ORDERS                  : "orders"
+    LAB_TEST_CATALOG         ||--o{ LAB_ORDERS                  : "catalogues"
+
+    %% Billing
+    PATIENTS                 ||--o{ BILLS                       : "billed"
+    APPOINTMENTS             ||--o| BILLS                       : "generates"
+    BILLS                    ||--o{ BILL_ITEMS                  : "itemized by"
+    SERVICE_CATALOG          ||--o{ BILL_ITEMS                  : "priced via"
+    BILLS                    ||--o{ PAYMENTS                    : "paid via"

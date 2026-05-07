@@ -1,0 +1,6 @@
+ServiceID,ServiceName,StandardPrice
+1,General Consultation,150.00
+2,ECG / EKG,200.00
+3,X-Ray (Single View),120.00
+4,MRI Scan,1200.00
+5,Emergency Room Visit,350.00

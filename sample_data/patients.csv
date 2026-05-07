@@ -1,0 +1,6 @@
+PatientID,AddressID,FirstName,LastName,DOB,Gender,Phone,Email,DateCreated
+1,1,James,Hartley,1985-03-12,Male,+1-555-0101,james.hartley@email.com,2024-01-15 09:00:00
+2,2,Maria,Gonzalez,1990-07-24,Female,+1-555-0102,maria.gonzalez@email.com,2024-02-20 10:30:00
+3,3,Robert,Kim,1978-11-05,Male,+1-555-0103,robert.kim@email.com,2024-03-08 14:00:00
+4,4,Sophia,Patel,2001-05-18,Female,+1-555-0104,sophia.patel@email.com,2024-04-01 11:15:00
+5,5,David,Thompson,1963-09-30,Male,+1-555-0105,david.thompson@email.com,2024-05-22 16:45:00
