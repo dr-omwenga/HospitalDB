@@ -104,18 +104,18 @@ SELECT
     dr.FirstName + ' ' + dr.LastName            AS DoctorFullName,
     b.CreatedDate                               AS BillCreatedDate,
     DATEDIFF(DAY, b.CreatedDate, GETDATE())     AS DaysOutstanding,
-    CASE
-        WHEN DATEDIFF(DAY, b.CreatedDate, GETDATE()) BETWEEN 0  AND 30 THEN '0-30 Days'
-        WHEN DATEDIFF(DAY, b.CreatedDate, GETDATE()) BETWEEN 31 AND 60 THEN '31-60 Days'
-        WHEN DATEDIFF(DAY, b.CreatedDate, GETDATE()) BETWEEN 61 AND 90 THEN '61-90 Days'
-        ELSE '90+ Days'
-    END                                         AS AgingBucket,
-    -- Sort key so ORDER BY AgingBucket is chronologically meaningful
-    CASE
-        WHEN DATEDIFF(DAY, b.CreatedDate, GETDATE()) BETWEEN 0  AND 30 THEN 1
-        WHEN DATEDIFF(DAY, b.CreatedDate, GETDATE()) BETWEEN 31 AND 60 THEN 2
-        WHEN DATEDIFF(DAY, b.CreatedDate, GETDATE()) BETWEEN 61 AND 90 THEN 3
-        ELSE 4
+    -- Aging bucket label: delegates threshold logic to fn_GetAgingBucket so
+    -- collection-policy boundaries are maintained in a single location.
+    dbo.fn_GetAgingBucket(
+        DATEDIFF(DAY, b.CreatedDate, GETDATE()))    AS AgingBucket,
+    -- Integer sort key derived from fn_GetAgingBucket to keep ordering
+    -- consistent with the label without duplicating the CASE expression.
+    CASE dbo.fn_GetAgingBucket(
+             DATEDIFF(DAY, b.CreatedDate, GETDATE()))
+        WHEN '0-30 Days'  THEN 1
+        WHEN '31-60 Days' THEN 2
+        WHEN '61-90 Days' THEN 3
+        ELSE                   4
     END                                         AS AgingBucketSortKey,
     b.TotalAmount,
     b.PaidAmount,

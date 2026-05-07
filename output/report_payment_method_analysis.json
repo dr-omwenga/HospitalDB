@@ -1,0 +1,67 @@
+﻿{
+    "payment_method_analysis":  {
+                                    "metadata":  {
+                                                     "report":  "report_payment_method_analysis",
+                                                     "description":  "Payment volume and value breakdown by payment method with share-of-total percentages.",
+                                                     "source_view":  "dbo.vw_PaymentDetail (aggregated)",
+                                                     "database":  "HospitalDB",
+                                                     "server":  "localhost",
+                                                     "generated_at":  "2026-05-07T09:20:30Z",
+                                                     "row_count":  4
+                                                 },
+                                    "data":  [
+                                                 {
+                                                     "PaymentMethod":  "Credit Card",
+                                                     "TransactionCount":  10,
+                                                     "TotalAmountCollected":  1580,
+                                                     "AvgTransactionAmount":  158,
+                                                     "MinTransactionAmount":  80,
+                                                     "MaxTransactionAmount":  300,
+                                                     "FirstPaymentDate":  "2025-07-03",
+                                                     "LastPaymentDate":  "2026-05-05",
+                                                     "ActivitySpreadDays":  306,
+                                                     "ShareOfTotalValuePct":  36.62,
+                                                     "ShareOfTotalVolumePct":  33.33
+                                                 },
+                                                 {
+                                                     "PaymentMethod":  "Insurance",
+                                                     "TransactionCount":  7,
+                                                     "TotalAmountCollected":  1440,
+                                                     "AvgTransactionAmount":  205.71,
+                                                     "MinTransactionAmount":  100,
+                                                     "MaxTransactionAmount":  500,
+                                                     "FirstPaymentDate":  "2025-08-14",
+                                                     "LastPaymentDate":  "2026-04-28",
+                                                     "ActivitySpreadDays":  257,
+                                                     "ShareOfTotalValuePct":  33.37,
+                                                     "ShareOfTotalVolumePct":  23.33
+                                                 },
+                                                 {
+                                                     "PaymentMethod":  "Cash",
+                                                     "TransactionCount":  9,
+                                                     "TotalAmountCollected":  825,
+                                                     "AvgTransactionAmount":  91.67,
+                                                     "MinTransactionAmount":  50,
+                                                     "MaxTransactionAmount":  150,
+                                                     "FirstPaymentDate":  "2025-06-15",
+                                                     "LastPaymentDate":  "2026-04-12",
+                                                     "ActivitySpreadDays":  301,
+                                                     "ShareOfTotalValuePct":  19.12,
+                                                     "ShareOfTotalVolumePct":  30
+                                                 },
+                                                 {
+                                                     "PaymentMethod":  "Debit Card",
+                                                     "TransactionCount":  4,
+                                                     "TotalAmountCollected":  470,
+                                                     "AvgTransactionAmount":  117.5,
+                                                     "MinTransactionAmount":  70,
+                                                     "MaxTransactionAmount":  150,
+                                                     "FirstPaymentDate":  "2025-07-10",
+                                                     "LastPaymentDate":  "2026-02-19",
+                                                     "ActivitySpreadDays":  224,
+                                                     "ShareOfTotalValuePct":  10.89,
+                                                     "ShareOfTotalVolumePct":  13.33
+                                                 }
+                                             ]
+                                }
+}

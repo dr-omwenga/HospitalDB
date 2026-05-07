@@ -533,25 +533,21 @@ SELECT
         WHEN u.LastLogin IS NULL THEN NULL
         ELSE DATEDIFF(DAY, u.LastLogin, GETDATE())
     END                                         AS DaysSinceLastLogin,
-    -- Risk tier for access-review prioritisation
-    CASE
-        WHEN u.IsActive = 0
-            THEN 'Disabled'
-        WHEN u.LastLogin IS NULL AND u.IsActive = 1
-            THEN 'Critical'
-        WHEN DATEDIFF(DAY, u.LastLogin, GETDATE()) > 90  AND u.IsActive = 1
-            THEN 'High Risk'
-        WHEN DATEDIFF(DAY, u.LastLogin, GETDATE()) BETWEEN 31 AND 90 AND u.IsActive = 1
-            THEN 'Medium Risk'
-        ELSE 'Low Risk'
-    END                                         AS InactivityRiskTier,
-    -- Sort key for risk tier (Critical first)
-    CASE
-        WHEN u.IsActive = 0                                                  THEN 5
-        WHEN u.LastLogin IS NULL AND u.IsActive = 1                          THEN 1
-        WHEN DATEDIFF(DAY, u.LastLogin, GETDATE()) > 90  AND u.IsActive = 1  THEN 2
-        WHEN DATEDIFF(DAY, u.LastLogin, GETDATE()) BETWEEN 31 AND 90         THEN 3
-        ELSE                                                                      4
+    -- Risk tier: delegates to fn_GetInactivityRiskTier so threshold
+    -- adjustments (e.g. changing the High Risk boundary from 90 to 60 days)
+    -- are applied in one place across all reports and access-review workflows.
+    dbo.fn_GetInactivityRiskTier(
+        u.IsActive, u.LastLogin, CAST(GETDATE() AS DATE))
+                                                AS InactivityRiskTier,
+    -- Integer sort key derived from the same function so tier ordering is
+    -- always consistent with the label (Critical=1 … Disabled=5).
+    CASE dbo.fn_GetInactivityRiskTier(
+             u.IsActive, u.LastLogin, CAST(GETDATE() AS DATE))
+        WHEN 'Critical'    THEN 1
+        WHEN 'High Risk'   THEN 2
+        WHEN 'Medium Risk' THEN 3
+        WHEN 'Low Risk'    THEN 4
+        ELSE                    5   -- 'Disabled'
     END                                         AS RiskSortKey,
     -- Total audit events ever attributed to this user
     COUNT(al.AuditID)                           AS TotalAuditEvents,

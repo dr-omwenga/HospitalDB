@@ -137,15 +137,11 @@ BEGIN
         ua.AppointmentDay,
         ua.AppointmentTime,
         ua.DaysUntilAppointment,
-        -- Reminder priority drives outbound call/SMS scheduling:
-        -- same-day slots require immediate action; tomorrow slots need
-        -- a same-day reminder call; everything else queues for bulk SMS.
-        CASE
-            WHEN ua.DaysUntilAppointment = 0 THEN 'Today'
-            WHEN ua.DaysUntilAppointment = 1 THEN 'Tomorrow'
-            WHEN ua.DaysUntilAppointment <= 7 THEN 'This Week'
-            ELSE                                   'Upcoming'
-        END                                        AS ReminderPriority,
+        -- Reminder priority delegates to fn_GetReminderPriority so the
+        -- channel-routing thresholds are consistent with any notification jobs
+        -- that also call the same function.
+        dbo.fn_GetReminderPriority(
+            ua.DaysUntilAppointment)               AS ReminderPriority,
         ua.PatientName,
         ua.PatientDOB,
         ua.PatientPhone,

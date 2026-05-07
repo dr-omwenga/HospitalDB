@@ -139,14 +139,10 @@ BEGIN
         fs.PaymentTransactions,
         fs.MostRecentPayment,
         fs.PreferredPaymentMethod,
-        -- Derived risk tier enables tiered collection outreach without
-        -- requiring the caller to write their own CASE expression.
-        CASE
-            WHEN fs.OutstandingBalance >= 500 THEN 'High'
-            WHEN fs.OutstandingBalance >= 100 THEN 'Medium'
-            WHEN fs.OutstandingBalance >    0 THEN 'Low'
-            ELSE                                   'Cleared'
-        END                                    AS CollectionRisk
+        -- Derived risk tier delegates to fn_GetCollectionRiskTier so that
+        -- balance thresholds are defined in a single place across all reports.
+        dbo.fn_GetCollectionRiskTier(fs.OutstandingBalance)
+                                               AS CollectionRisk
     FROM  dbo.vw_PatientFinancialSummary fs
     WHERE fs.OutstandingBalance >= @MinBalance
       AND (
