@@ -363,6 +363,7 @@ BEGIN
     DECLARE @DaysUntil        INT;
     DECLARE @AuditOldValue    NVARCHAR(500);
     DECLARE @AuditNewValue    NVARCHAR(500);
+    DECLARE @ErrMsg           NVARCHAR(500);
 
     BEGIN TRY
 
@@ -401,11 +402,14 @@ BEGIN
         -- Guard 3: Business rule enforcement
         -- ---------------------------------------------------------------
         -- Rule 3.2: lifecycle is one-way; terminal states cannot be changed.
+        -- THROW does not support expression messages, so build into a variable
+        -- and use RAISERROR for the dynamic status string.
         IF @CurrentStatus <> 'Scheduled'
-            THROW 50015,
-                'Status update rejected: only Scheduled appointments can be given an outcome.  '
-                + 'Current status is already ''' + @CurrentStatus + '''.',
-                1;
+        BEGIN
+            SET @ErrMsg = 'Status update rejected: only Scheduled appointments can be given an outcome.  Current status is already ''' + @CurrentStatus + '''.';
+            RAISERROR(@ErrMsg, 16, 1) WITH NOWAIT;
+            RETURN;
+        END;
 
         -- Rule 6.1 (financial protection): block cancellation when a Paid bill exists.
         -- Cancelling an appointment that has already been paid would leave an
